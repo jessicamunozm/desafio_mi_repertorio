@@ -1,30 +1,58 @@
-import base_de_datos from "../config/base_de_datos.js"
+import pool from "../config/db.js"
 
-// crear función crud
-const traerData = async () => {
+const getData = async () => {
     try {
-        const consultarCancion = { 
+        const consulta = { 
             text: 'SELECT * FROM canciones'
         };
-        const response = await base_de_datos.query(consultarCancion);
-        return response.rows;
+        const response = await pool.query(consulta)
+        return response.rows
     } catch (error) {
-        console.log(error.message);
+        console.log(error.message)
     }
 };
 
-const addData = async (cancion) => {
-    
+const addData = async (titulo, artista, tono) => {
     try {
-        const insertarCancion = { 
-            text: 'INSERT INTO canciones (id, titulo, artista, tono) VALUES ($1, $2, $3) returning *',
-            values: [cancion]
-        };
-        const response = await base_de_datos.query(insertarCancion);
+        const consulta = { 
+            text: 'INSERT INTO canciones (titulo, artista, tono) VALUES ($1, $2, $3) RETURNING *',
+            values: [titulo, artista, tono]
+        }
+        const response = await pool.query(consulta)
+        console.log(response.rows)
+        return response.rows
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+const deleteData = async (id) => {
+    try {
+        const consulta = { 
+            text: 'DELETE FROM canciones WHERE id = $1',
+            values: [id]
+        }
+        const response = await pool.query(consulta)
+        if (response.rowCount === 0) {
+            throw new Error("Canción no encontrada")
+        }
+        return response.rows
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+const updateData = async (id, titulo, artista, tono) => {
+    try {
+        const consulta = { 
+            text: 'UPDATE canciones SET titulo = $1, artista = $2, tono = $3 WHERE id = $4 RETURNING *',
+            values: [titulo, artista, tono, id]
+        }
+        const response = await pool.query(consulta)
         return response.rows;
     } catch (error) {
-        console.log(error.message);
+        console.log(error.message)
     }
-}        
+}
 
-export {traerData, addData}
+export {getData, addData, deleteData, updateData}

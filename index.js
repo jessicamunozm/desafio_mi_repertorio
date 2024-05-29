@@ -1,13 +1,12 @@
-import express from "express";
-import router from "./routes/router.js"
-const app = express ()
+import express from 'express'
+import router from './routes/router.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
+const app = express()
 const PORT = process.env.PORT || 3000
 
-//middleware para enviar info x post, debe ir antes de las rutas
-app.use (express.json())
+app.use(express.json())
+app.use('/', router)
 
-//middleware para rutas
-app.use ('/', router) 
-
-app.listen (PORT, () => console.log  (`Servidor levantado en puerto http://localhost:${PORT}`))
+app.listen(PORT, () => console.log(`Servidor levantado en puerto http://localhost:${PORT}`))
